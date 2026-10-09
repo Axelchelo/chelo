@@ -10,33 +10,43 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiObfuscateRouteImport } from './routes/api.obfuscate'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiObfuscateRoute = ApiObfuscateRouteImport.update({
+  id: '/api/obfuscate',
+  path: '/api/obfuscate',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/obfuscate': typeof ApiObfuscateRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/obfuscate': typeof ApiObfuscateRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/obfuscate': typeof ApiObfuscateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/api/obfuscate'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/api/obfuscate'
+  id: '__root__' | '/' | '/api/obfuscate'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiObfuscateRoute: typeof ApiObfuscateRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +58,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/obfuscate': {
+      id: '/api/obfuscate'
+      path: '/api/obfuscate'
+      fullPath: '/api/obfuscate'
+      preLoaderRoute: typeof ApiObfuscateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiObfuscateRoute: ApiObfuscateRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
