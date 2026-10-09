@@ -36,13 +36,16 @@ local function _die()
 end
 
 local function _run_module(b64)
-    local src = _base64(b64)
+    -- Auxiliary probes are optional: Roblox clients commonly disable loadstring/load.
+    -- They must never prevent the actual bytecode VM from loading.
     local loader = loadstring or load
-    local fn = loader(src)
-    if not fn then _die() end
-    local ok, mod = pcall(fn)
-    if not ok or type(mod) ~= "table" or type(mod.run) ~= "function" then _die() end
-    if not pcall(mod.run, _AntiLevel) then _die() end
+    if type(loader) ~= "function" then return true end
+    local ok, fn = pcall(loader, _base64(b64))
+    if not ok or type(fn) ~= "function" then return true end
+    local ran, mod = pcall(fn)
+    if not ran or type(mod) ~= "table" or type(mod.run) ~= "function" then return true end
+    pcall(mod.run, _AntiLevel)
+    return true
 end
 
 if _AntiLevel and _AntiLevel > 0 then
